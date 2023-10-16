@@ -1,6 +1,7 @@
 package com.example.diceroller
 
 import android.os.Bundle
+import android.view.KeyEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -12,6 +13,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,21 +39,28 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
-
 @Preview(showBackground = true)
 @Composable
-fun DiceRollerApp(){
-    DiceWithButtonAndImage(modifier = Modifier
-        .fillMaxSize()
-        .wrapContentSize(Alignment.Center)
+fun DiceRollerApp() {
+    var count by remember { mutableStateOf(0) }
+    var previousResult by remember { mutableStateOf(0) }
+    DiceWithButtonAndImage(
+        modifier = Modifier.fillMaxSize().wrapContentSize(Alignment.Center),
+        count = count,
+        onRoll = { newResult ->
+            count++
+            previousResult = newResult
+        }
     )
 }
 
 @Composable
-fun DiceWithButtonAndImage(modifier: Modifier = Modifier){
+fun DiceWithButtonAndImage(modifier: Modifier = Modifier, count: Int, onRoll: (Int)->Unit){
     var result by remember {
         mutableStateOf(1)
+    }
+    var previousResult by remember {
+        mutableStateOf(0)
     }
     val imageResource = when(result){
         1 -> R.drawable.dice_1
@@ -61,6 +70,7 @@ fun DiceWithButtonAndImage(modifier: Modifier = Modifier){
         5 -> R.drawable.dice_5
         else -> R.drawable.dice_6
     }
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -70,13 +80,39 @@ fun DiceWithButtonAndImage(modifier: Modifier = Modifier){
             contentDescription = result.toString()
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = { result = (1..6).random() }) {
+        Button(
+            onClick = {
+                val newResult = (1..6).random()
+                previousResult = result
+                result = newResult
+                onRoll(newResult)
+            }
+        ) {
             Text(text = stringResource(R.string.roll), fontSize = 24.sp)
         }
-        Row(
-        ) {
-           
+        Row() {
+            Text(
+                text = stringResource(R.string.contador),
+                fontSize = 18.sp,
+                color = Color(0xFF757575),
+            )
+            Text(
+                text = count.toString(),
+                fontSize = 18.sp,
+                color = Color(0xFF757575)
+            )
         }
-
+        Row() {
+            Text(
+                text = stringResource(R.string.ulti_tir),
+                fontSize = 18.sp,
+                color = Color(0xFF757575),
+            )
+            Text(
+                text = previousResult.toString(),
+                fontSize = 18.sp,
+                color = Color(0xFF757575),
+            )
+        }
     }
 }

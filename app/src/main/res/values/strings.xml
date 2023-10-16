@@ -2,4 +2,5 @@
     <string name="app_name">Dice Roller</string>
     <string name="roll">Roll</string>
     <string name="contador">El dado se ha tirado: </string>
+    <string name="ulti_tir">El ultimo numero que ha salido ha sido: </string>
 </resources>
